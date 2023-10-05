@@ -1,0 +1,10 @@
+C:\Users\valti\Documents\rust-crud-api\target\debug\deps\finl_unicode-3e597395888fe8f6.rmeta: C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\lib.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\categories.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\grapheme_clusters.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\data\mod.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\data\characters.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\data\grapheme_property.rs
+
+C:\Users\valti\Documents\rust-crud-api\target\debug\deps\finl_unicode-3e597395888fe8f6.d: C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\lib.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\categories.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\grapheme_clusters.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\data\mod.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\data\characters.rs C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\data\grapheme_property.rs
+
+C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\lib.rs:
+C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\categories.rs:
+C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\grapheme_clusters.rs:
+C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\data\mod.rs:
+C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\data\characters.rs:
+C:\Users\valti\.cargo\registry\src\index.crates.io-6f17d22bba15001f\finl_unicode-1.2.0\src\data\grapheme_property.rs:
