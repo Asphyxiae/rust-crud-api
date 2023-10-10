@@ -1,6 +1,10 @@
+# Versión de Docker Compose
 version: '3.9'
 
+# Define los servicios (contenedores) que se utilizarán en la aplicación
 services:
+
+  # Servicio para la aplicación Rust
   rustapp:
     container_name: rustapp
     image: helixasphyxia/rustapp:1.0.0
@@ -10,9 +14,11 @@ services:
       args:
         DATABASE_URL: postgres://postgres:postgres@db:5432/postgres
     ports:
-      - '8080:8080'
+      - '8080:8080'  # Mapea el puerto 8080 del host al puerto 8080 del contenedor
     depends_on:
-      - db
+      - db  # Espera a que el servicio 'db' esté disponible antes de iniciar 'rustapp'
+
+  # Servicio para la base de datos PostgreSQL
   db:
     container_name: db
     image: postgres:15
@@ -21,9 +27,11 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
     ports:
-      - '5432:5432'
-    volumes:
-      - pgdata:/var/lib/postgresql/data
+      - '5432:5432'  # Mapea el puerto 5432 del host al puerto 5432 del contenedor
 
+    volumes:
+      - pgdata:/var/lib/postgresql/data  # Crea un volumen llamado 'pgdata' para persistencia de datos de PostgreSQL
+
+# Define los volúmenes
 volumes:
-  pgdata: {}
+  pgdata: {} # Define un volumen llamado 'pgdata'

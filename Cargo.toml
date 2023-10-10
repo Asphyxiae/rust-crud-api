@@ -1,12 +1,22 @@
+# Este es un archivo de manifiesto de Cargo para un proyecto Rust.
+# Define la configuración del proyecto y las dependencias.
+
 [package]
+# Nombre del paquete o proyecto.
 name = "rust-crud-api"
+
+# Versión del paquete.
 version = "0.1.0"
+
+# La edición de Rust que se está utilizando.
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
+# Dependencias del proyecto.
 [dependencies]
+# La biblioteca "postgres" en la versión 0.19 se utiliza para interactuar con bases de datos PostgreSQL.
 postgres = "0.19"
-serde = "1.0"
-serde_json = "1.0"
-serde_derive = "1.0"
+
+# Las siguientes dependencias son para la serialización y deserialización de datos en formato JSON.
+serde = "1.0"            # La biblioteca principal para la serialización y deserialización.
+serde_json = "1.0"       # Soporte específico para JSON.
+serde_derive = "1.0"     # Generación de código de serialización y deserialización automáticamente.
