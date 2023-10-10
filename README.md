@@ -72,17 +72,21 @@ Siga estos pasos para ejecutar la aplicación:
 
 La aplicación estará disponible en http://localhost:8080.
 
+---
+
 ## Documentación de la API
 
 La API proporciona los siguientes endpoints:
 
-POST /users: Crea un nuevo usuario en la base de datos.
-GET /users/{id}: Obtiene los detalles de un usuario por su ID.
-GET /users: Obtiene la lista de todos los usuarios.
-PUT /users/{id}: Actualiza los detalles de un usuario existente por su ID.
-DELETE /users/{id}: Elimina un usuario por su ID.
+- `POST /users`: Crea un nuevo usuario en la base de datos.
+- `GET /users/{id}`: Obtiene los detalles de un usuario por su ID.
+- `GET /users`: Obtiene la lista de todos los usuarios.
+- `PUT /users/{id}`: Actualiza los detalles de un usuario existente por su ID.
+- `DELETE /users/{id}`: Elimina un usuario por su ID.
+
 Para obtener más detalles sobre cómo utilizar estos endpoints, consulta la implementación en el código fuente.
-   
+
+---
 
    
 
