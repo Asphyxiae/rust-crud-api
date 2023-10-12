@@ -78,11 +78,11 @@ La aplicación estará disponible en http://localhost:8080.
 
 La API proporciona los siguientes endpoints:
 
-- `POST /users`: Crea un nuevo usuario en la base de datos.
-- `GET /users/{id}`: Obtiene los detalles de un usuario por su ID.
-- `GET /users`: Obtiene la lista de todos los usuarios.
-- `PUT /users/{id}`: Actualiza los detalles de un usuario existente por su ID.
-- `DELETE /users/{id}`: Elimina un usuario por su ID.
+- `POST /users`: Crea un nuevo helado en la base de datos.
+- `GET /users/{id}`: Obtiene los detalles de un helado por su ID.
+- `GET /users`: Obtiene la lista de todos los helados.
+- `PUT /users/{id}`: Actualiza los detalles de un helado existente por su ID.
+- `DELETE /users/{id}`: Elimina un helado por su ID.
 
 Para obtener más detalles sobre cómo utilizar estos endpoints, consulta la implementación en el código fuente.
 
