@@ -1,4 +1,4 @@
-# rust-crud-api
+# rust-crud-api-icecreams
 
 ![Rust Logo](https://www.rust-lang.org/static/images/rust-logo-blk.png)
 ![Heladería](heladeria.png)
