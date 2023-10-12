@@ -1,6 +1,7 @@
 # rust-crud-api
 
 ![Rust Logo](https://www.rust-lang.org/static/images/rust-logo-blk.png)
+![Heladería](heladeria.png)
 
 ---
 
