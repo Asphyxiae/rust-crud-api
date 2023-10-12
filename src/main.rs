@@ -1,5 +1,4 @@
 use postgres::{Client, NoTls};
-use postgres::Error as PostgresError;
 use std::net::{TcpListener, TcpStream};
 use std::io::{Read, Write};
 use std::env;
@@ -8,14 +7,14 @@ use serde_json::Value;
 #[macro_use]
 extern crate serde_derive;
 
-// Modelo: estructura User con id, name, email, edad y telefono
+// Modelo: estructura IceCream con id, flavor, size, price y quantity
 #[derive(Serialize, Deserialize)]
-struct User {
+struct IceCream {
     id: Option<i32>,
-    name: String,
-    email: String,
-    edad: i32,          
-    telefono: String,    
+    flavor: String,
+    size: String,
+    price: f64,    // Precio del helado
+    quantity: i32, // Cantidad de helados
 }
 
 // Constantes
@@ -25,14 +24,8 @@ const INTERNAL_SERVER_ERROR: &str = "HTTP/1.1 500 INTERNAL SERVER ERROR\r\n\r\n"
 
 // Función principal
 fn main() {
-    // Obtener la URL de la base de datos en tiempo de ejecución
-    let db_url = match env::var("DATABASE_URL") {
-        Ok(url) => url,
-        Err(_) => {
-            println!("DATABASE_URL no está configurada, se utiliza la configuración predeterminada");
-            "postgres://postgres:postgres@db:5432/postgres".to_string()
-        }
-    };
+    // Obtener la cadena de conexión a la base de datos desde la variable de entorno
+    let db_url = env::var("DATABASE_URL").unwrap_or("postgres://postgres:postgres@db:5432/postgres".to_string());
 
     // Configurar la base de datos
     if let Err(e) = set_database(&db_url) {
@@ -41,7 +34,7 @@ fn main() {
     }
 
     // Iniciar el servidor e imprimir el puerto
-    let listener = TcpListener::bind("0.0.0.0:8080").unwrap();
+    let listener = TcpListener::bind("0.0.0.0:8080").expect("No se pudo enlazar al puerto 8080");
     println!("Servidor iniciado en el puerto 8080");
 
     // Manejar las solicitudes de clientes
@@ -67,11 +60,11 @@ fn handle_client(mut stream: TcpStream, db_url: &str) {
             request.push_str(String::from_utf8_lossy(&buffer[..size]).as_ref());
 
             let (status_line, content) = match &*request {
-                r if r.starts_with("POST /users") => handle_post_request(r, db_url),
-                r if r.starts_with("GET /users/") => handle_get_request(r, db_url),
-                r if r.starts_with("GET /users") => handle_get_all_request(r, db_url),
-                r if r.starts_with("PUT /users/") => handle_put_request(r, db_url),
-                r if r.starts_with("DELETE /users/") => handle_delete_request(r, db_url),
+                r if r.starts_with("POST /icecreams") => handle_post_request(r, db_url),
+                r if r.starts_with("GET /icecreams/") => handle_get_request(r, db_url),
+                r if r.starts_with("GET /icecreams") => handle_get_all_request(r, db_url),
+                r if r.starts_with("PUT /icecreams/") => handle_put_request(r, db_url),
+                r if r.starts_with("DELETE /icecreams/") => handle_delete_request(r, db_url),
                 _ => (NOT_FOUND.to_string(), "404 Not Found".to_string()),
             };
 
@@ -87,25 +80,25 @@ fn handle_client(mut stream: TcpStream, db_url: &str) {
 
 // Función para manejar la solicitud POST
 fn handle_post_request(request: &str, db_url: &str) -> (String, String) {
-    match (get_user_request_body(&request), Client::connect(db_url, NoTls)) {
-        (Ok(mut user), Ok(mut client)) => {
-            // Obtener edad y telefono del cuerpo de la solicitud
+    match (get_icecream_request_body(&request), Client::connect(db_url, NoTls)) {
+        (Ok(mut icecream), Ok(mut client)) => {
+            // Obtener price y quantity del cuerpo de la solicitud
             let body = get_request_body(&request);
-            if let Some(edad) = body.get("edad").and_then(|e| e.as_i64()) {
-                user.edad = edad as i32;
+            if let Some(price) = body.get("price").and_then(|p| p.as_f64()) {
+                icecream.price = price;
             }
-            if let Some(telefono) = body.get("telefono").and_then(|t| t.as_str()) {
-                user.telefono = telefono.to_string();
+            if let Some(quantity) = body.get("quantity").and_then(|q| q.as_i64()) {
+                icecream.quantity = quantity as i32;
             }
 
             client
                 .execute(
-                    "INSERT INTO users (name, email, edad, telefono) VALUES ($1, $2, $3, $4)",
-                    &[&user.name, &user.email, &user.edad, &user.telefono]
+                    "INSERT INTO icecreams (flavor, size, price, quantity) VALUES ($1, $2, $3, $4)",
+                    &[&icecream.flavor, &icecream.size, &icecream.price, &icecream.quantity]
                 )
                 .unwrap();
 
-            (OK_RESPONSE.to_string(), "Usuario creado".to_string())
+            (OK_RESPONSE.to_string(), "Helado creado".to_string())
         }
         _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
     }
@@ -115,42 +108,42 @@ fn handle_post_request(request: &str, db_url: &str) -> (String, String) {
 fn handle_get_request(request: &str, db_url: &str) -> (String, String) {
     match (get_id(&request).parse::<i32>(), Client::connect(db_url, NoTls)) {
         (Ok(id), Ok(mut client)) =>
-            match client.query_one("SELECT * FROM users WHERE id = $1", &[&id]) {
+            match client.query_one("SELECT * FROM icecreams WHERE id = $1", &[&id]) {
                 Ok(row) => {
-                    let user = User {
+                    let icecream = IceCream {
                         id: row.get(0),
-                        name: row.get(1),
-                        email: row.get(2),
-                        edad: row.get(3),
-                        telefono: row.get(4),
+                        flavor: row.get(1),
+                        size: row.get(2),
+                        price: row.get(3),
+                        quantity: row.get(4),
                     };
 
-                    (OK_RESPONSE.to_string(), serde_json::to_string(&user).unwrap())
+                    (OK_RESPONSE.to_string(), serde_json::to_string(&icecream).unwrap())
                 }
-                _ => (NOT_FOUND.to_string(), "Usuario no encontrado".to_string()),
+                _ => (NOT_FOUND.to_string(), "Helado no encontrado".to_string()),
             }
 
         _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
     }
 }
 
-// Función para manejar la solicitud GET de todos los usuarios
+// Función para manejar la solicitud GET de todos los helados
 fn handle_get_all_request(_request: &str, db_url: &str) -> (String, String) {
     match Client::connect(db_url, NoTls) {
         Ok(mut client) => {
-            let mut users = Vec::new();
+            let mut icecreams = Vec::new();
 
-            for row in client.query("SELECT * FROM users", &[]).unwrap() {
-                users.push(User {
+            for row in client.query("SELECT * FROM icecreams", &[]).unwrap() {
+                icecreams.push(IceCream {
                     id: row.get(0),
-                    name: row.get(1),
-                    email: row.get(2),
-                    edad: row.get(3),
-                    telefono: row.get(4),
+                    flavor: row.get(1),
+                    size: row.get(2),
+                    price: row.get(3),
+                    quantity: row.get(4),
                 });
             }
 
-            (OK_RESPONSE.to_string(), serde_json::to_string(&users).unwrap())
+            (OK_RESPONSE.to_string(), serde_json::to_string(&icecreams).unwrap())
         }
         _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
     }
@@ -161,28 +154,28 @@ fn handle_put_request(request: &str, db_url: &str) -> (String, String) {
     match
         (
             get_id(&request).parse::<i32>(),
-            get_user_request_body(&request),
+            get_icecream_request_body(&request),
             Client::connect(db_url, NoTls),
         )
     {
-        (Ok(id), Ok(mut user), Ok(mut client)) => {
-            // Obtener edad y telefono del cuerpo de la solicitud
+        (Ok(id), Ok(mut icecream), Ok(mut client)) => {
+            // Obtener price y quantity del cuerpo de la solicitud
             let body = get_request_body(&request);
-            if let Some(edad) = body.get("edad").and_then(|e| e.as_i64()) {
-                user.edad = edad as i32;
+            if let Some(price) = body.get("price").and_then(|p| p.as_f64()) {
+                icecream.price = price;
             }
-            if let Some(telefono) = body.get("telefono").and_then(|t| t.as_str()) {
-                user.telefono = telefono.to_string();
+            if let Some(quantity) = body.get("quantity").and_then(|q| q.as_i64()) {
+                icecream.quantity = quantity as i32;
             }
 
             client
                 .execute(
-                    "UPDATE users SET name = $1, email = $2, edad = $3, telefono = $4 WHERE id = $5",
-                    &[&user.name, &user.email, &user.edad, &user.telefono, &id]
+                    "UPDATE icecreams SET flavor = $1, size = $2, price = $3, quantity = $4 WHERE id = $5",
+                    &[&icecream.flavor, &icecream.size, &icecream.price, &icecream.quantity, &id]
                 )
                 .unwrap();
 
-            (OK_RESPONSE.to_string(), "Usuario actualizado".to_string())
+            (OK_RESPONSE.to_string(), "Helado actualizado".to_string())
         }
         _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
     }
@@ -192,31 +185,31 @@ fn handle_put_request(request: &str, db_url: &str) -> (String, String) {
 fn handle_delete_request(request: &str, db_url: &str) -> (String, String) {
     match (get_id(&request).parse::<i32>(), Client::connect(db_url, NoTls)) {
         (Ok(id), Ok(mut client)) => {
-            let rows_affected = client.execute("DELETE FROM users WHERE id = $1", &[&id]).unwrap();
+            let rows_affected = client.execute("DELETE FROM icecreams WHERE id = $1", &[&id]).unwrap();
 
             if rows_affected == 0 {
-                return (NOT_FOUND.to_string(), "Usuario no encontrado".to_string());
+                return (NOT_FOUND.to_string(), "Helado no encontrado".to_string());
             }
 
-            (OK_RESPONSE.to_string(), "Usuario eliminado".to_string())
+            (OK_RESPONSE.to_string(), "Helado eliminado".to_string())
         }
         _ => (INTERNAL_SERVER_ERROR.to_string(), "Error".to_string()),
     }
 }
 
 // Función para configurar la base de datos
-fn set_database(db_url: &str) -> Result<(), PostgresError> {
+fn set_database(db_url: &str) -> Result<(), postgres::Error> {
     // Conectar a la base de datos
     let mut client = Client::connect(db_url, NoTls)?;
 
     // Crear la tabla si no existe
     client.batch_execute(
-        "CREATE TABLE IF NOT EXISTS users (
+        "CREATE TABLE IF NOT EXISTS icecreams (
             id SERIAL PRIMARY KEY,
-            name VARCHAR NOT NULL,
-            email VARCHAR NOT NULL,
-            edad INTEGER,
-            telefono VARCHAR
+            flavor VARCHAR NOT NULL,
+            size VARCHAR NOT NULL,
+            price DOUBLE PRECISION,
+            quantity INTEGER
         )"
     )?;
     Ok(())
@@ -227,8 +220,8 @@ fn get_id(request: &str) -> &str {
     request.split("/").nth(2).unwrap_or_default().split_whitespace().next().unwrap_or_default()
 }
 
-// Función para deserializar un usuario a partir del cuerpo de la solicitud
-fn get_user_request_body(request: &str) -> Result<User, serde_json::Error> {
+// Función para deserializar un helado a partir del cuerpo de la solicitud
+fn get_icecream_request_body(request: &str) -> Result<IceCream, serde_json::Error> {
     serde_json::from_str(request.split("\r\n\r\n").last().unwrap_or_default())
 }
 
